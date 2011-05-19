@@ -34,12 +34,12 @@ public final class WaterPixel {
 	
 	public synchronized Region getRegion() {
 			
-			return region;
+		return region;
 	}
 	
 	public synchronized void setRegion( Region region ) {
 		
-			this.region = region;
+		this.region = region;
 	}
 
 	@Override
