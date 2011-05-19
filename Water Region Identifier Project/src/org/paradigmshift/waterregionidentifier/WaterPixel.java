@@ -1,11 +1,14 @@
 package org.paradigmshift.waterregionidentifier;
 
-// Immutable
 public final class WaterPixel {
 	
+	// Immutable
 	private final long category;
 	private final int x;
 	private final int y;
+	
+	// Mutable
+	private Region region;
 	
 	public WaterPixel( final long category, final int x, final int y ) {
 		
@@ -27,6 +30,16 @@ public final class WaterPixel {
 	public int getY() {
 		
 		return y;
+	}
+	
+	public synchronized Region getRegion() {
+			
+			return region;
+	}
+	
+	public synchronized void setRegion( Region region ) {
+		
+			this.region = region;
 	}
 
 	@Override

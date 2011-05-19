@@ -26,8 +26,6 @@ public class Main {
 		
 		Long start = System.currentTimeMillis();
 		
-		args = new String[1];
-		args[ 0 ] = "test.csv";
 		// Check args for input file
 		if ( args != null && args.length >= 1 ) {
 		
@@ -39,11 +37,32 @@ public class Main {
 					
 					// Process the input data
 					WaterMatrix matrix = new WaterMatrix( inputFile );
-					RegionIdentifier regionIdentifier = new RegionIdentifier( matrix );
-					String results = regionIdentifier.identifyRegions();
+					Region.identifyRegions( matrix );
+					
+					if ( log.isDebugEnabled() ) log.debug( "Preparing results..." );
+					
+					// Construct results string
+					int maxRegionIdLength = Region.getMaxLength();
+					StringBuilder outputSb = new StringBuilder();
+					for ( int y = 0; y < matrix.getNumRows(); y++ ) {
+						
+						for ( int x = 0; x < matrix.getNumCols(); x++ ) {
+							
+							WaterPixel pixel = matrix.getWaterPixel( x, y );
+							Region region = pixel.getRegion();
+							Long regionId = region.getId();
+							
+							// Zero pad the numbers
+							int length = maxRegionIdLength - String.valueOf( regionId ).length();
+							for ( int i = 0; i < length; i++ ) outputSb.append( '0' );
+							
+							outputSb.append( region.getId() );
+							if ( x < matrix.getNumCols() - 1 ) outputSb.append( WaterMatrix.COLUMN_SEPARATOR );
+						}
+						outputSb.append( WaterMatrix.LINE_SEPARATOR );
+					}
 					
 					// Get the output file
-					if ( log.isDebugEnabled() ) log.debug( "Writing results to file..." );
 					File outputFile;
 					try {
 						
@@ -106,7 +125,7 @@ public class Main {
 							
 							try {
 								
-								writer.write( results );
+								writer.write( outputSb.toString() );
 							}
 							catch ( IOException ioe ) {
 								
@@ -129,6 +148,16 @@ public class Main {
 									log.error( "Failed to close output file.", ioe );
 								}
 							}
+							
+							Long finish = System.currentTimeMillis();
+							Long elapsed = finish - start;
+							SimpleDateFormat formatter = new SimpleDateFormat( "HH:mm:ss:SSS" );
+							formatter.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+							
+							StringBuilder timeSb = new StringBuilder( "Completed! Total time: " );
+							timeSb.append( formatter.format( elapsed ) );
+							
+							if ( log.isInfoEnabled() ) log.info( timeSb.toString() );
 						}
 						catch ( IOException ioe ) {
 							
@@ -165,18 +194,8 @@ public class Main {
 		}
 		else {
 			
-			// No input file specified
-			log.fatal( "Must specify an input csv file." );
+			// No inputs file specified
+			log.fatal( "Not enough parameters." );
 		}
-		
-		Long finish = System.currentTimeMillis();
-		Long elapsed = finish - start;
-		SimpleDateFormat formatter = new SimpleDateFormat( "HH:mm:ss:SSS" );
-		formatter.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-		
-		StringBuilder timeSb = new StringBuilder( "Completed! Total time: " );
-		timeSb.append( formatter.format( elapsed ) );
-		
-		if ( log.isInfoEnabled() ) log.info( timeSb.toString() );
 	}
 }

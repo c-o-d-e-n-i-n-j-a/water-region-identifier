@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 
+// Immutable
 public class WaterMatrix {
 	
 	private static final Logger log = Logger.getLogger( WaterMatrix.class );

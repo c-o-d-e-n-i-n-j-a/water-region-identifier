@@ -8,7 +8,7 @@
    <!-- ============================= -->   
    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
       <param name="Target" value="System.out"/>
-      <param name="Threshold" value="DEBUG"/>
+      <param name="Threshold" value="INFO"/>
 
       <layout class="org.apache.log4j.PatternLayout">
          <!-- The default pattern: Date Priority [Category] Message\n -->
@@ -20,11 +20,8 @@
    <!-- Preserve messages in a local file -->
    <!-- ================================= -->
    <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
-      <param name="File" value="log/CumulusFracto.log"/>
+      <param name="File" value="log/WaterRegionIdentifier.log"/>
       <param name="Append" value="false"/>
-
-      <!-- Rollover at midnight each day -->
-      <param name="DatePattern" value="'.'yyyy-MM-dd"/>
 
       <layout class="org.apache.log4j.PatternLayout">
          <!-- The default pattern: Date Priority [Category] Message\n -->
@@ -32,15 +29,13 @@
       </layout>
    </appender>
    
-   <!--
-   <category name="org.paradigmshift.watercategoryidentifier">
-      <priority value="DEBUG"/>
-      <appender-ref ref="FILE"/>
-   </category>
-   -->
-   
-   <root>
-      <priority value="DEBUG"/>
-      <appender-ref ref="CONSOLE"/>
-   </root>
+  <category name="org.paradigmshift.waterregionidentifier">
+    <priority value="DEBUG"/>
+    <appender-ref ref="FILE"/>
+  </category>
+  
+  <root>
+    <priority value="INFO"/>
+    <appender-ref ref="CONSOLE"/>
+  </root>
 </log4j:configuration> 
