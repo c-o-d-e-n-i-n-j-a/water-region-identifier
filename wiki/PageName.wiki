@@ -6,11 +6,11 @@ The latest version brings several changes.  Among them are a refactoring/renamin
 
 == Details ==
 === Refactoring/renaming ===
-A new class has been introduced, called the WaterMatrix, which represents the 'grid' of water categories within the input file.  Underneath it is just a 2 dimensional array.  Once loaded, the class's state is immutable.  The pixels cannot be changed unless a new matrix is created.  This is useful for concurrency as it guarantees that it will never change no matter what accesses it.
+A new class has been introduced, called the WaterMatrix, which represents the 'grid' of water categories within the input file.  Underneath it is just a 2 dimensional array.  Once loaded, the an instance of this class's state is immutable.  The pixels cannot be changed unless a new matrix is created.  This is useful for concurrency as it guarantees that it will never change no matter what accesses it.
 
 A Main class was created to contain the code for starting up, reading the input arguments, and generating the output.  This is so that this code can change without having to modify the rest of the program significantly.
 
-The class named WaterCategory was renamed to WaterPixel to better reflect its purpose.  It was then modified to be completely immutable.  Its category and x,y location would never change.  However, for performance reasons a Region was added for quick and easy access to this pixel's current region.  Access to the region is synchronized, and all other properties remain immutable.
+The class named WaterCategory was renamed to WaterPixel to better reflect its purpose.  It was then modified to be completely immutable.  Its category and x,y location would never change.  However, for performance reasons a Region was added for quick and easy access to the current pixel's current region.  Access to this region is synchronized, and all other properties still remain immutable.
 
 CategorySorter was renamed to WaterPixelSorter.
 
