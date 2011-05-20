@@ -25,10 +25,7 @@ public final class Region {
 	
 	public static void identifyRegions( WaterMatrix matrix ) throws InterruptedException, ExecutionException, NumberFormatException, IOException {
 		
-		if ( log.isInfoEnabled() ) {
-			
-			log.info( "Processing the matrix..." );
-		}
+		if ( log.isInfoEnabled() ) log.info( "Processing the matrix..." );
 		
 		Map<Long, WaterPixelSorter> sorters = new HashMap<Long, WaterPixelSorter>();
 		Collection<Region> regions = new ArrayList<Region>();
@@ -53,7 +50,7 @@ public final class Region {
 		}
 		
 		// Start sorting and wait for all tasks to complete
-		ExecutorService threadPool = Executors.newFixedThreadPool( 10 );
+		ExecutorService threadPool = Executors.newFixedThreadPool( 50 );
 		Collection<WaterPixelSorter> tasks = sorters.values();
 		for ( Future<Collection<Region>> f : threadPool.invokeAll( tasks ) ) {
 			
