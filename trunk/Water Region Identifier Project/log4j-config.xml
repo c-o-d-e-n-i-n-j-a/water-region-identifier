@@ -30,8 +30,8 @@
    </appender>
    
   <category name="org.paradigmshift.waterregionidentifier">
-    <priority value="DEBUG"/>
-    <appender-ref ref="FILE"/>
+    <!-- <priority value="DEBUG"/> -->
+    <!-- <appender-ref ref="FILE"/> -->
   </category>
   
   <root>
