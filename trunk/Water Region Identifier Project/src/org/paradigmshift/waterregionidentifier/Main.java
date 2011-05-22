@@ -37,12 +37,12 @@ public class Main {
 					
 					// Process the input data
 					WaterMatrix matrix = new WaterMatrix( inputFile );
-					Region.identifyRegions( matrix );
+					matrix.identifyRegions();
 					
 					if ( log.isDebugEnabled() ) log.debug( "Preparing results..." );
 					
 					// Construct results string
-					int maxRegionIdLength = Region.getMaxLength();
+					int maxRegionIdLength = matrix.getMaxRegionDigits();
 					StringBuilder outputSb = new StringBuilder();
 					for ( int y = 0; y < matrix.getNumRows(); y++ ) {
 						
