@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -27,15 +28,19 @@ public final class WaterMatrix {
 	private Map<Long, WaterPixelSorter> sorters = new HashMap<Long, WaterPixelSorter>();
 	private int maxRegionDigits = 0; 
 	
-	public WaterMatrix( File inputFile ) {
+	public WaterMatrix( File sourceFile ) {
 		
-		if ( inputFile == null ) log.fatal( "Must specify a valid input file.", new IllegalArgumentException( "inputFile is null." ) );
+		if ( sourceFile == null ) {
+			IllegalArgumentException iae = new IllegalArgumentException();
+			log.fatal( "Source file is null.", new IllegalArgumentException() );
+			throw iae;
+		}
 		
 		try {
 			
-			if ( log.isInfoEnabled() ) log.info( "Loading matrix data..." );
+			if ( log.isInfoEnabled() ) log.info( "Loading matrix..." );
 			
-			BufferedReader reader = new BufferedReader( new FileReader( inputFile ) );
+			BufferedReader reader = new BufferedReader( new FileReader( sourceFile ) );
 			String line;
 			
 			// Get number of rows and columns
@@ -45,12 +50,21 @@ public final class WaterMatrix {
 			while ( (line = reader.readLine()) != null ) {
 				
 				rowCount++;
-				Integer tempColCount = line.split( COLUMN_SEPARATOR ).length;
-				if ( tempColCount > 0 && colCount == 0 ) colCount = tempColCount;
-				if ( tempColCount <= 0 || !tempColCount.equals( colCount ) )
-					log.fatal( "Row " + rowCount + " has an error with number of columns.", new IllegalArgumentException( "colCount: " + colCount + ", tempColCount: " + tempColCount ) );
+				Integer currColCount = line.split( COLUMN_SEPARATOR ).length;
+				if ( currColCount > 0 && colCount == 0 ) colCount = currColCount;
+				if ( currColCount <= 0 || !currColCount.equals( colCount ) ) {
+					
+					IllegalArgumentException iae = new IllegalArgumentException();
+					log.fatal( "Column count mismatch on row " + rowCount + ": colCount: " + colCount + ", currColCount: " + currColCount, iae );
+					throw iae;
+				}
 			}
-			if ( rowCount <= 0 ) log.fatal( "File contains no rows.", new IllegalArgumentException( "rowCount: 0" ) );
+			if ( rowCount <= 0 ) {
+				
+				IllegalArgumentException iae = new IllegalArgumentException();
+				log.fatal( "Source contains no rows.", iae );
+				throw iae;
+			}
 			if ( log.isDebugEnabled() ) log.debug( "rows: " + rowCount + " cols: " + colCount );
 			
 			// Create the matrix
@@ -60,7 +74,7 @@ public final class WaterMatrix {
 			
 			// Populate the matrix and sort all the pixels by category (divide and conquer)
 			reader.close();
-			reader = new BufferedReader( new FileReader( inputFile ) );
+			reader = new BufferedReader( new FileReader( sourceFile ) );
 			while ( (line = reader.readLine()) != null ) {
 				
 				String [] numbers = line.split( COLUMN_SEPARATOR );
@@ -83,17 +97,31 @@ public final class WaterMatrix {
 				y++;
 			}
 			
-			if ( log.isInfoEnabled() ) log.info( "Data load complete." );
+			if ( log.isDebugEnabled() ) log.debug( "Found " + sorters.size() + " categories." );
+			if ( log.isInfoEnabled() ) log.info( "Load complete." );
 		}
 		catch ( IOException ioe ) {
 			
-			log.fatal( "Encountered an error when trying to access the file.", new IllegalArgumentException( ioe ) );
+			IllegalArgumentException iae = new IllegalArgumentException( ioe );
+			log.fatal( "Encountered an error when trying to access the file.", iae );
+			throw iae;
 		}
 	}
 	
 	public void identifyRegions() throws InterruptedException, ExecutionException, NumberFormatException, IOException {
 		
+		identifyRegions( null );
+	}
+	
+	public void identifyRegions( List<Long> ignores ) throws InterruptedException, ExecutionException, NumberFormatException, IOException {
+		
 		if ( log.isInfoEnabled() ) log.info( "Processing the matrix..." );
+		
+		if ( ignores != null && ignores.size() > 0 ) {
+			
+			if ( log.isInfoEnabled() ) log.info( "Ignoring categories: " + ignores );
+			for ( long ignore : ignores ) sorters.remove( ignore );
+		}
 		
 		Collection<Region> regions = new ArrayList<Region>();
 		
@@ -111,7 +139,8 @@ public final class WaterMatrix {
 		long regionId = 0;
 		for ( Region region : regions ) region.setId( regionId++ );
 		maxRegionDigits = String.valueOf( regionId - 1 ).length();
-		if ( log.isInfoEnabled() ) log.info( "Processing complete: regions identified." );
+		if ( log.isDebugEnabled() ) log.debug( "Identified " + regionId + " regions." );
+		if ( log.isInfoEnabled() ) log.info( "Processing complete." );
 	}
 	
 	public int getNumRows() {
