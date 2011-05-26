@@ -1,0 +1,7 @@
+{{{
+Option (* = required)                   Description                            
+---------------------                   -----------                   
+-i, --ignore [Long]                     Set ignore categories. Ex: -i 1,2,3 (default: -1)                        
+-r, --result <File>                     Sets the result file. (default: results.csv)                         
+* -s, * --source <File>                 Sets the source file.
+}}}
